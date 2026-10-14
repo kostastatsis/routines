@@ -1,0 +1,493 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="el" data-mode="morning">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ρουτίνες">
+<meta name="theme-color" id="themeColor" content="#FFF4E0">
+<title>Ρουτίνες Γιώργου &amp; Αχιλλέα</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&amp;family=Commissioner:wght@500;600;700&amp;display=swap">
+<style>
+/* Layout: a header row (greeting + morning/evening switch), then two equal columns, one per child,
+   whose task cards stretch to fill the screen height. Morning is a warm daylight look, evening a night-sky look. */
+:root {
+  --ground: #FFF4E0;
+  --panel: #FFFFFF;
+  --card: #FFF9EF;
+  --line: #EFE0C4;
+  --ink: #2B2342;
+  --sub: #6A5F7E;
+  --accent: #B8650F;
+  --accent-tint: rgba(232, 144, 42, 0.16);
+  --tab-on: #2B2342;
+  --tab-on-ink: #FFF4E0;
+  --on-kid: #FFFFFF;
+  --done-tile: rgba(255, 255, 255, 0.22);
+  --g: #2F6BD1;
+  --g-tint: rgba(47, 107, 209, 0.11);
+  --a: #C9551E;
+  --a-tint: rgba(201, 85, 30, 0.11);
+  --font-display: 'Comfortaa', 'Commissioner', ui-rounded, system-ui, -apple-system, sans-serif;
+  --font-body: 'Commissioner', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+:root[data-mode="evening"] {
+  --ground: #161A33;
+  --panel: #20264A;
+  --card: #283063;
+  --line: #343D74;
+  --ink: #F4EFE4;
+  --sub: #B3B8DA;
+  --accent: #F6C85F;
+  --accent-tint: rgba(246, 200, 95, 0.14);
+  --tab-on: #F6C85F;
+  --tab-on-ink: #161A33;
+  --on-kid: #161A33;
+  --done-tile: rgba(22, 26, 51, 0.14);
+  --g: #6BB0FF;
+  --g-tint: rgba(107, 176, 255, 0.16);
+  --a: #FF9F66;
+  --a-tint: rgba(255, 159, 102, 0.16);
+  color-scheme: dark;
+}
+
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition: background-color 0.4s, color 0.4s;
+}
+button { font: inherit; color: inherit; touch-action: manipulation; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.ic { display: block; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.app {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25em;
+  padding:
+    max(1.5em, env(safe-area-inset-top, 0px))
+    max(1.4em, env(safe-area-inset-right, 0px))
+    max(1.3em, env(safe-area-inset-bottom, 0px))
+    max(1.4em, env(safe-area-inset-left, 0px));
+  font-size: clamp(14px, min(2.3vw, 1.6vh), 26px);
+}
+
+/* Header */
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1em; }
+.greet { display: flex; align-items: center; gap: 0.85em; min-width: 0; }
+.sky {
+  width: 3.5em; height: 3.5em; flex: none; border-radius: 50%;
+  background: var(--accent-tint); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+}
+.sky .ic { width: 2.1em; height: 2.1em; }
+.date { font-size: 0.9em; font-weight: 600; color: var(--sub); text-transform: capitalize; }
+h1 {
+  margin: 0.15em 0 0;
+  font-family: var(--font-display); font-weight: 700; font-size: 2em; line-height: 1.1;
+  text-wrap: balance;
+}
+.controls { display: flex; align-items: center; gap: 0.55em; }
+.switch { display: flex; gap: 4px; padding: 5px; border-radius: 999px; background: var(--panel); }
+.switch button {
+  min-height: max(44px, 2.75em);
+  padding: 0 1.05em 0 0.85em;
+  border: 0; border-radius: 999px;
+  background: transparent; color: var(--sub);
+  display: flex; align-items: center; gap: 0.4em;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.95em;
+  cursor: pointer;
+  transition: background-color 0.25s, color 0.25s;
+}
+.switch button .ic { width: 1.3em; height: 1.3em; }
+.switch button[aria-pressed="true"] { background: var(--tab-on); color: var(--tab-on-ink); }
+.reset {
+  min-width: max(48px, 2.75em); height: max(48px, 2.75em);
+  padding: 0 0.7em;
+  border-radius: 999px; border: 2px solid var(--line);
+  background: transparent; color: var(--sub);
+  display: flex; align-items: center; justify-content: center; gap: 0.35em;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.9em;
+  cursor: pointer;
+}
+.reset .ic { width: 1.35em; height: 1.35em; }
+.reset.armed { background: var(--accent); border-color: var(--accent); color: var(--ground); }
+
+/* Board */
+.board {
+  flex: 1 1 0; min-height: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.05em;
+}
+.kid {
+  --kid: var(--g); --kid-tint: var(--g-tint);
+  display: flex; flex-direction: column; gap: 0.85em;
+  padding: 1.05em 0.95em 0.95em;
+  border-radius: 1.6em;
+  background: var(--panel);
+  box-shadow: 0 0 0 4px transparent;
+  min-height: 0; min-width: 0;
+  transition: box-shadow 0.3s, background-color 0.4s;
+}
+.kid-a { --kid: var(--a); --kid-tint: var(--a-tint); }
+.kid.complete { box-shadow: 0 0 0 4px var(--kid); }
+.kid-head { display: flex; align-items: center; gap: 0.75em; min-height: 4em; }
+.avatar {
+  font-size: 1.55em; width: 2.15em; height: 2.15em; flex: none; border-radius: 50%;
+  background: var(--kid); color: var(--on-kid);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700;
+}
+.kid-meta { display: flex; flex-direction: column; gap: 0.35em; min-width: 0; }
+h2 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 1.45em; line-height: 1.1; }
+.progress { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.55em; color: var(--sub); font-weight: 600; font-size: 0.85em; font-variant-numeric: tabular-nums; }
+.dots { display: flex; gap: 5px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; background: var(--line); transition: background-color 0.25s; }
+.dot.on { background: var(--kid); }
+.bravo {
+  margin: 0; display: flex; align-items: center; gap: 0.3em;
+  color: var(--accent); font-family: var(--font-display); font-weight: 700; font-size: 1.05em;
+}
+.bravo .ic { width: 1.25em; height: 1.25em; fill: currentColor; }
+.cheer .bravo { animation: cheer 0.7s cubic-bezier(.3, 1.6, .5, 1); }
+
+.tasks {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 0.55em;
+  flex: 1 1 0; min-height: 0;
+}
+.tasks li { flex: 1 1 0; min-height: 0; max-height: 8em; display: flex; }
+.task {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 0.75em;
+  padding: 0.35em 0.75em 0.35em 0.5em;
+  border-radius: 1.2em;
+  border: 3px solid var(--line);
+  background: var(--card); color: var(--ink);
+  font-family: var(--font-display); font-weight: 700; font-size: 1.07em;
+  text-align: left; cursor: pointer;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s, transform 0.1s;
+}
+.task:active { transform: scale(0.98); }
+.tile {
+  width: 3.05em; height: 3.05em; flex: none; border-radius: 0.8em;
+  background: var(--kid-tint); color: var(--kid);
+  display: flex; align-items: center; justify-content: center;
+  transition: background-color 0.25s, color 0.25s;
+}
+.tile .ic { width: 60%; height: 60%; }
+.kid-a .task { font-size: 1.12em; }
+.kid-a .tile { width: 3.5em; height: 3.5em; }
+.label { flex: 1 1 auto; min-width: 0; line-height: 1.2; }
+.check {
+  width: 1.9em; height: 1.9em; flex: none; box-sizing: border-box; border-radius: 50%;
+  border: 3px solid var(--line); background: transparent; color: var(--kid);
+  display: flex; align-items: center; justify-content: center;
+}
+.check .ic { width: 70%; height: 70%; stroke-width: 3; opacity: 0; }
+.task.done { background: var(--kid); border-color: var(--kid); color: var(--on-kid); }
+.task.done .tile { background: var(--done-tile); color: var(--on-kid); }
+.task.done .check { background: var(--on-kid); border-color: var(--on-kid); }
+.task.done .check .ic { opacity: 1; }
+.task.pop .check { animation: pop 0.4s cubic-bezier(.3, 1.6, .5, 1); }
+
+@keyframes pop { 0% { transform: scale(0.4); } 100% { transform: scale(1); } }
+@keyframes cheer { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+/* Phone width: columns stack and the page scrolls */
+@media (max-width: 640px) {
+  html, body { height: auto; min-height: 100%; }
+  .app { height: auto; min-height: 100%; }
+  .board { grid-template-columns: 1fr; flex: none; }
+  .tasks, .tasks li { flex: none; }
+  .tasks li { min-height: 4.4em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <symbol id="i-toys" viewBox="0 0 24 24"><rect x="3" y="11" width="9" height="9" rx="1.5"/><path d="M6 14.5h3M7.5 13v3"/><circle cx="17" cy="8" r="4"/><path d="M13.6 6.2c1.6 1 4.8 1 6.8 0"/><path d="M15 15.5l2.5 4.5 2.5-4.5z"/></symbol>
+    <symbol id="i-bath" viewBox="0 0 24 24"><path d="M3 12h18v1.5A5.5 5.5 0 0 1 15.5 19h-7A5.5 5.5 0 0 1 3 13.5z"/><path d="M6 12V6.5a2.5 2.5 0 0 1 5 0"/><path d="M7 19l-1 2M17 19l1 2"/><circle cx="15" cy="7" r="1.2"/><circle cx="18.5" cy="4.5" r="1"/></symbol>
+    <symbol id="i-pajamas" viewBox="0 0 24 24"><path d="M8.5 3L3 6l2 4.5 2.5-1V21h9V9.5l2.5 1L21 6l-5.5-3a3.5 3.5 0 0 1-7 0z"/><path d="M14 13.8a2.6 2.6 0 1 1-2.8-3 2.1 2.1 0 0 0 2.8 3z"/></symbol>
+    <symbol id="i-shirt" viewBox="0 0 24 24"><path d="M8.5 3L3 6l2 4.5 2.5-1V21h9V9.5l2.5 1L21 6l-5.5-3a3.5 3.5 0 0 1-7 0z"/></symbol>
+    <symbol id="i-tooth" viewBox="0 0 24 24"><path d="M7.5 3C5 3 3.5 5 3.5 7.5c0 2 1 3.5 1.5 5.5.6 2.6 1 8 3 8s1.6-5.5 4-5.5 2 5.5 4 5.5 2.4-5.4 3-8c.5-2 1.5-3.5 1.5-5.5C20.5 5 19 3 16.5 3c-2 0-2.8 1-4.5 1S9.5 3 7.5 3z"/></symbol>
+    <symbol id="i-toilet" viewBox="0 0 24 24"><rect x="4" y="3" width="7" height="7" rx="1.5"/><path d="M3 10h18c0 4-3 6.5-7 6.5h-3.5C7.5 16.5 5 15 4 12.5"/><path d="M9.5 16.5L8.5 21h7l-1-4.5"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M2.5 5.5c3-1.5 6.5-1.5 9.5 1 3-2.5 6.5-2.5 9.5-1v13.5c-3-1.5-6.5-1.5-9.5 1-3-2.5-6.5-2.5-9.5-1z"/><path d="M12 6.5v13.5"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A7.5 7.5 0 1 1 9.5 4.5a6 6 0 0 0 10 10z"/><path d="M17 3.5v3M15.5 5h3"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-8-4.6-8-10.4A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8 2.6C20 15.4 12 20 12 20z"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3c3.6 4.4 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 2.4-6.6 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></symbol>
+    <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3 11.5h18a9 9 0 0 1-18 0z"/><path d="M8.5 20.5h7"/><path d="M13.5 11.5l3-7.5"/><path d="M8 8.5c0-1 1-1.5 1-2.5s-1-1.5-1-2.5"/></symbol>
+    <symbol id="i-shoe" viewBox="0 0 24 24"><path d="M3 17V7.5h5l1.5 3 4.5 1.5 5 1.2a2.5 2.5 0 0 1 2 2.4V17z"/><path d="M3 17v2.5h18V17"/><path d="M10.5 12.5l1-1.5M13 13.3l1-1.5"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="14" rx="3.5"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/><path d="M8.5 13.5h7v4h-7z"/></symbol>
+    <symbol id="i-door" viewBox="0 0 24 24"><path d="M6 21V4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21"/><path d="M3 21h18"/><circle cx="14.5" cy="12" r="1"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4.5 3.5v4.5H9"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <header class="top">
+    <div class="greet">
+      <div class="sky" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><use id="skyIcon" href="#i-sun"/></svg></div>
+      <div>
+        <div class="date" id="date"></div>
+        <h1 id="title">Ώρα για σχολείο</h1>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="switch" role="group" aria-label="Ρουτίνα">
+        <button type="button" id="tab-morning" data-pick="morning" aria-pressed="true">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sun"/></svg><span>Πρωί</span>
+        </button>
+        <button type="button" id="tab-evening" data-pick="evening" aria-pressed="false">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-moon"/></svg><span>Βράδυ</span>
+        </button>
+      </div>
+      <button type="button" class="reset" id="reset" aria-label="Ξανά από την αρχή" title="Ξανά από την αρχή">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-reset"/></svg><span id="resetText" hidden>Σίγουρα;</span>
+      </button>
+    </div>
+  </header>
+  <main class="board" id="board"></main>
+</div>
+
+<script>
+// ---- The routines. Edit these lists to change the tasks. ----
+// Each task is [icon, label]. Icons: toys, bath, pajamas, shirt, tooth, toilet, book, moon,
+// heart, drop, bowl, shoe, bag, door, sun, star.
+const ROUTINES = {
+  morning: {
+    g: [
+      ['toilet', 'Τουαλέτα'],
+      ['drop', 'Πλένω το πρόσωπο'],
+      ['shirt', 'Ντύνομαι'],
+      ['bowl', 'Τρώω πρωινό'],
+      ['tooth', 'Πλένω τα δόντια'],
+      ['shoe', 'Φοράω παπούτσια'],
+      ['bag', 'Παίρνω την τσάντα'],
+      ['door', 'Μπουφάν & φεύγουμε']
+    ],
+    a: [
+      ['toilet', 'Τουαλέτα'],
+      ['shirt', 'Ντύνομαι'],
+      ['bowl', 'Πρωινό'],
+      ['tooth', 'Δοντάκια'],
+      ['shoe', 'Παπούτσια'],
+      ['door', 'Μπουφάν & πάμε']
+    ]
+  },
+  evening: {
+    g: [
+      ['toys', 'Μαζεύω τα παιχνίδια'],
+      ['bath', 'Μπάνιο'],
+      ['pajamas', 'Φοράω πιτζάμες'],
+      ['bag', 'Ετοιμάζω την τσάντα'],
+      ['toilet', 'Τουαλέτα'],
+      ['tooth', 'Πλένω τα δόντια'],
+      ['book', 'Διαβάζουμε παραμύθι'],
+      ['moon', 'Φιλάκι & καληνύχτα']
+    ],
+    a: [
+      ['toys', 'Μαζεύουμε παιχνίδια'],
+      ['bath', 'Μπάνιο'],
+      ['pajamas', 'Πιτζάμες'],
+      ['toilet', 'Τουαλέτα'],
+      ['tooth', 'Δοντάκια'],
+      ['book', 'Παραμύθι'],
+      ['heart', 'Αγκαλιά & ύπνος']
+    ]
+  }
+};
+
+const KIDS = [
+  { id: 'g', name: 'Γιώργος', voc: 'Γιώργο', initial: 'Γ' },
+  { id: 'a', name: 'Αχιλλέας', voc: 'Αχιλλέα', initial: 'Α' }
+];
+
+// Morning runs from 04:00 until 14:00; evening the rest of the day.
+const MORNING_FROM = 4;
+const EVENING_FROM = 14;
+
+const TITLES = { morning: 'Ώρα για σχολείο', evening: 'Ώρα για ύπνο' };
+const STORE_KEY = 'kids-routines-v1';
+
+function today() {
+  const d = new Date();
+  return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+}
+function autoMode() {
+  const h = new Date().getHours();
+  return h >= MORNING_FROM && h < EVENING_FROM ? 'morning' : 'evening';
+}
+
+const state = { day: today(), done: {}, pick: null, pickAuto: null, shown: null };
+
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+  if (saved && saved.date === state.day && saved.done) state.done = saved.done;
+} catch (e) {}
+
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({ date: state.day, done: state.done })); } catch (e) {}
+}
+
+// A manual pick holds until the clock crosses into the other routine.
+function currentMode() {
+  const auto = autoMode();
+  return state.pick && state.pickAuto === auto ? state.pick : auto;
+}
+
+function keyOf(mode, kid, i) { return mode + ':' + kid + ':' + i; }
+
+function isComplete(mode, kidId) {
+  return ROUTINES[mode][kidId].every((_, i) => state.done[keyOf(mode, kidId, i)]);
+}
+
+const els = {
+  root: document.documentElement,
+  theme: document.getElementById('themeColor'),
+  sky: document.getElementById('skyIcon'),
+  date: document.getElementById('date'),
+  title: document.getElementById('title'),
+  board: document.getElementById('board'),
+  tabs: document.querySelectorAll('[data-pick]'),
+  reset: document.getElementById('reset'),
+  resetText: document.getElementById('resetText')
+};
+
+function render(opts) {
+  opts = opts || {};
+  const mode = currentMode();
+  state.shown = mode;
+  els.root.dataset.mode = mode;
+  els.theme.setAttribute('content', mode === 'evening' ? '#161A33' : '#FFF4E0');
+  els.sky.setAttribute('href', mode === 'evening' ? '#i-moon' : '#i-sun');
+  els.title.textContent = TITLES[mode];
+  try {
+    els.date.textContent = new Date().toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' });
+  } catch (e) { els.date.textContent = ''; }
+  els.tabs.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pick === mode)));
+
+  els.board.innerHTML = KIDS.map(kid => {
+    const list = ROUTINES[mode][kid.id];
+    let count = 0;
+    const tasks = list.map(([icon, label], i) => {
+      const key = keyOf(mode, kid.id, i);
+      const done = !!state.done[key];
+      if (done) count++;
+      const pop = done && opts.pop === key ? ' pop' : '';
+      return '<li><button type="button" class="task' + (done ? ' done' : '') + pop + '" data-key="' + key + '" aria-pressed="' + done + '">' +
+        '<span class="tile" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><use href="#i-' + icon + '"/></svg></span>' +
+        '<span class="label">' + label + '</span>' +
+        '<span class="check" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg></span>' +
+        '</button></li>';
+    }).join('');
+    const dots = list.map((_, i) => '<span class="dot' + (state.done[keyOf(mode, kid.id, i)] ? ' on' : '') + '"></span>').join('');
+    const complete = count === list.length;
+    const status = complete
+      ? '<p class="bravo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg>Μπράβο ' + kid.voc + '!</p>'
+      : '<p class="progress"><span class="dots" aria-hidden="true">' + dots + '</span><span>' + count + ' / ' + list.length + '</span></p>';
+    const classes = 'kid kid-' + kid.id + (complete ? ' complete' : '') + (opts.cheer === kid.id ? ' cheer' : '');
+    return '<section class="' + classes + '" aria-label="' + kid.name + '">' +
+      '<div class="kid-head"><div class="avatar" aria-hidden="true">' + kid.initial + '</div>' +
+      '<div class="kid-meta"><h2>' + kid.name + '</h2>' + status + '</div></div>' +
+      '<ul class="tasks">' + tasks + '</ul></section>';
+  }).join('');
+}
+
+els.board.addEventListener('click', e => {
+  const btn = e.target.closest('.task');
+  if (!btn) return;
+  const key = btn.dataset.key;
+  const [mode, kidId] = key.split(':');
+  const wasComplete = isComplete(mode, kidId);
+  if (state.done[key]) delete state.done[key]; else state.done[key] = true;
+  save();
+  const nowComplete = isComplete(mode, kidId);
+  render({ pop: key, cheer: !wasComplete && nowComplete ? kidId : null });
+});
+
+els.tabs.forEach(b => b.addEventListener('click', () => {
+  state.pick = b.dataset.pick;
+  state.pickAuto = autoMode();
+  render();
+}));
+
+// Reset asks once: the first tap arms it for 3 seconds, the second clears the routine on screen.
+let armTimer = null;
+function disarm() {
+  clearTimeout(armTimer);
+  els.reset.classList.remove('armed');
+  els.resetText.hidden = true;
+}
+els.reset.addEventListener('click', () => {
+  if (!els.reset.classList.contains('armed')) {
+    els.reset.classList.add('armed');
+    els.resetText.hidden = false;
+    armTimer = setTimeout(disarm, 3000);
+    return;
+  }
+  disarm();
+  const mode = currentMode();
+  Object.keys(state.done).forEach(k => { if (k.indexOf(mode + ':') === 0) delete state.done[k]; });
+  save();
+  render();
+});
+
+// New day: clear the ticks. Also follow the clock from morning to evening.
+setInterval(() => {
+  const d = today();
+  if (d !== state.day) {
+    state.day = d;
+    state.done = {};
+    state.pick = null;
+    save();
+    render();
+  } else if (currentMode() !== state.shown) {
+    render();
+  }
+}, 30000);
+
+// Keep the iPad screen awake while the page is open, where the browser allows it.
+let wakeLock = null;
+async function keepAwake() {
+  try {
+    if ('wakeLock' in navigator && !wakeLock && document.visibilityState === 'visible') {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  } catch (e) { wakeLock = null; }
+}
+document.addEventListener('pointerdown', keepAwake);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') { keepAwake(); render(); }
+});
+
+render();
+</script>
+</body>
+</html>
+
+</body></html>
